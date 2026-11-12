@@ -15,7 +15,7 @@ requiresHumanReview debe ser true para SECURITY, posibles incidentes y casos que
 Si el mensaje es ambiguo, pide detalles. Si no hay ninguna señal suficiente, usa BUG, MEDIUM y requiresHumanReview true.
 response debe ser profesional, breve, contextualizada y en español. No afirmes haber ejecutado acciones, resuelto el incidente o creado tickets. Nunca pidas contraseñas, tokens o claves. Para posibles incidentes recomienda escalar a seguridad sin incluir instrucciones ofensivas.`;
 
-// Dependency injection lets the third member test errors without spending quota.
+// Cliente inyectable para probar errores sin consumir cuota.
 export function createGenerativeAnalyzer({
   apiKey = process.env.GEMINI_API_KEY,
   model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL,

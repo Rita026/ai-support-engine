@@ -2,6 +2,16 @@
 
 Prototipo académico que clasifica solicitudes de soporte con dos motores: reglas tradicionales y Gemini. Incluye una pantalla en español y una API con el mismo contrato para ambos motores.
 
+## Integrantes
+
+| Nombre | GitHub | Responsabilidad |
+| --- | --- | --- |
+| Ariel Abimael Chacon Herrera | [SoyAri](https://github.com/SoyAri) | API, Gemini, validaciones e integración |
+| Rita Gonzalez Sanches | [Rita026](https://github.com/Rita026) | Motor tradicional e interfaz |
+| Gomez Merino Katherine Daniela | [katherine920](https://github.com/katherine920) | Pruebas, comparación y documentación |
+
+El trabajo se realiza en la rama `develop`. Las instrucciones de la práctica están en el PDF original incluido en el repositorio.
+
 ## Ejecutar localmente
 
 Requiere Node.js 24 y npm.
@@ -46,18 +56,6 @@ La clave no se envía al navegador, no se sirve como archivo estático y está e
 ```
 
 El ejemplo ilustra el contrato; la respuesta tradicional completa está en el código y Gemini redacta su respuesta mediante una llamada real. Ver [contrato y errores](docs/contracts.md).
-
-## Reparto y estado
-
-| Parte | Responsable | Estado |
-| --- | --- | --- |
-| API, Gemini, validación e integración | Ariel Chacon | Implementada |
-| Motor tradicional y pantalla | Rita026 | Implementada |
-| Pruebas, comparación y documentación final | katherine920 | Implementada; ver evidencias y limitación visual |
-
-El proyecto se desarrolló con asistencia de IA. Cada integrante debe revisar y poder explicar el código de su parte. El nombre del autor de un commit y la cuenta que realiza el push son datos distintos. La autoría de GitHub se vincula mediante correos asociados a los perfiles; Rita026 y katherine920 utilizan sus direcciones noreply basadas en el identificador público de su cuenta.
-
-El trabajo se realiza en `develop`. Se conservan [las instrucciones originales de la parte 3](docs/persona-3.md) y el [prompt de trabajo](docs/prompt-persona-3.md) como documentación del reparto. Las instrucciones de la práctica están en el PDF original incluido en el repositorio.
 
 ## Pruebas automáticas
 

@@ -21,7 +21,7 @@ export function analyzeTraditional(message) {
   if (hasSecuritySignals(text)) category = 'SECURITY';
   else if (/\b(agregar|anadir|incorporar|nueva funcionalidad|nuevas funcionalidades|modo oscuro|solicitud de mejora|integracion con)\b/.test(text)
     || /\b(me gustaria|seria util|quisiera)\b.{0,70}\b(exportar|integrar|personalizar|funcion|funcionalidad)\b/.test(text)) category = 'FEATURE';
-  else if (/\b(iniciar sesion|inicio de sesion|inicios de sesion|login|contrasena|credenciales|acceso|acceder|cuenta bloqueada|no puedo entrar|no puedo ingresar|autenticacion|codigo de verificacion)\b/.test(text)) category = 'ACCESS';
+  else if (/\b(iniciar sesion|inicio de sesion|inicios de sesion|login|contrasena|credenciales|acceso|acceder|cuenta (?:esta )?bloqueada|no puedo entrar|no puedo ingresar|autenticacion|codigo de verificacion)\b/.test(text)) category = 'ACCESS';
   else if (/\b(error|errores|falla|fallas|fallo|fallos|bug|no funciona|no carga|se cierra|se congela|se cuelga|lento|lentitud|caido|caida|boton|pantalla|desalineado|desalineada|tipografia)\b/.test(text)) category = 'BUG';
 
   if (!category) {

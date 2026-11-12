@@ -4,11 +4,11 @@ Prototipo académico que clasifica solicitudes de soporte con dos motores: regla
 
 ## Integrantes
 
-| Nombre | GitHub | Responsabilidad |
-| --- | --- | --- |
-| Ariel Abimael Chacon Herrera | [SoyAri](https://github.com/SoyAri) | API, Gemini, validaciones e integración |
-| Rita Gonzalez Sanches | [Rita026](https://github.com/Rita026) | Motor tradicional e interfaz |
-| Gomez Merino Katherine Daniela | [katherine920](https://github.com/katherine920) | Pruebas, comparación y documentación |
+| Nombre | Matrícula | GitHub | Responsabilidad |
+| --- | --- | --- | --- |
+| Ariel Abimael Chacon Herrera | 3523110621 | [SoyAri](https://github.com/SoyAri) | API, Gemini, validaciones e integración |
+| Rita Gonzalez Sanches | 3523110444 | [Rita026](https://github.com/Rita026) | Motor tradicional e interfaz |
+| Gomez Merino Katherine Daniela | 3523110600 | [katherine920](https://github.com/katherine920) | Pruebas, comparación y documentación |
 
 El trabajo se realiza en la rama `develop`. Las instrucciones de la práctica están en el PDF original incluido en el repositorio.
 

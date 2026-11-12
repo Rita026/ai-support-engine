@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Analiza solicitudes de soporte con reglas y Gemini, y compara sus resultados.">
+    <title>AI Support Engine</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/public/styles.css">
+    <script src="/public/app.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <a class="brand" href="/" aria-label="AI Support Engine, inicio"><span class="brand-icon" aria-hidden="true">S<span>↗</span></span><span>Support Engine</span></a>
+        <span class="project-tag">PRÁCTICA · IA APLICADA</span>
+      </header>
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow">DOS ENFOQUES, UNA SOLICITUD</p>
+          <h1>Del mensaje<br>al siguiente paso.</h1>
+          <p class="intro-copy">Clasifica solicitudes de soporte, identifica su prioridad y prepara una respuesta. Explora las diferencias entre reglas y Gemini.</p>
+          <div class="legend"><span><i class="dot rules" aria-hidden="true"></i>Motor tradicional</span><span><i class="dot gemini" aria-hidden="true"></i>IA generativa</span></div>
+        </section>
+        <section class="workspace" aria-label="Analizador de solicitudes">
+          <form id="analyze-form" class="request-card">
+            <div class="section-heading"><span class="step">01</span><h2>Tu solicitud</h2></div>
+            <label for="message">¿Qué está pasando?</label>
+            <textarea id="message" name="message" rows="7" maxlength="5000" required placeholder="Ej. No puedo iniciar sesión desde esta mañana. Ya intenté recuperar mi contraseña."></textarea>
+            <div class="input-meta"><span>No incluyas contraseñas ni datos sensibles.</span><span id="counter">0 / 5000</span></div>
+            <fieldset class="examples"><legend>Prueba con un ejemplo</legend><div class="example-buttons">
+              <button type="button" data-example="access">Acceso</button><button type="button" data-example="bug">Error</button><button type="button" data-example="feature">Mejora</button><button type="button" data-example="security">Seguridad</button>
+            </div></fieldset>
+            <label for="mode">Motor de análisis</label>
+            <select id="mode" name="mode"><option value="traditional">Tradicional · reglas</option><option value="generative">Generativo · Gemini</option></select>
+            <div class="actions"><button id="analyze-button" class="button primary" type="submit">Analizar solicitud <span aria-hidden="true">↗</span></button><button id="compare-button" class="button secondary" type="button">Comparar ambos</button></div>
+            <p class="form-note">La comparación envía el mismo mensaje a los dos motores.</p>
+          </form>
+          <section class="results-panel" aria-labelledby="results-title" aria-busy="false">
+            <div class="section-heading"><span class="step">02</span><h2 id="results-title">Resultado del análisis</h2></div>
+            <p id="status" class="status" role="status" aria-live="polite">Listo para analizar</p>
+            <div id="empty-state" class="empty-state"><span class="empty-icon" aria-hidden="true">↗</span><h3>Cada solicitud tiene un siguiente paso.</h3><p>Escribe un mensaje o elige un ejemplo para ver su categoría, prioridad y respuesta sugerida.</p></div>
+            <div id="results" class="results"></div>
+          </section>
+        </section>
+        <section class="how-it-works" aria-label="Acerca de los motores"><div><span class="mini-label">TRADICIONAL</span><p>Reglas explícitas y respuestas predeterminadas. Rápido, reproducible y sin llamadas a IA.</p></div><div><span class="mini-label">GENERATIVO</span><p>Gemini interpreta el contexto y redacta una respuesta específica para cada solicitud.</p></div><div><span class="mini-label">REVISIÓN HUMANA</span><p>Los posibles incidentes de seguridad se señalan para que una persona los revise.</p></div></section>
+      </main>
+      <footer><span>AI Support Engine</span><span>Prototipo académico · Las respuestas son sugerencias de soporte.</span></footer>
+    </div>
+    <template id="result-template">
+      <article class="result-card"><div class="result-top"><h3 class="engine-name"></h3><span class="engine-detail"></span></div><p class="analyzed-message"></p><div class="result-body"><dl class="badges"><div><dt>Categoría</dt><dd class="category badge"></dd></div><div><dt>Prioridad</dt><dd class="priority badge"></dd></div></dl><p class="review"></p><h4>Respuesta sugerida</h4><p class="response"></p><details><summary>Ver respuesta JSON</summary><pre class="json"></pre></details></div><div class="error-box" role="alert" hidden><strong>No se pudo completar el análisis</strong><p class="error-message"></p><code class="error-code"></code></div></article>
+    </template>
+  </body>
+</html>

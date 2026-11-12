@@ -1,5 +1,7 @@
 # Prompt para copiar a la IA del integrante 3
 
+> Encargo original conservado como referencia. La parte 3 ya está implementada y sus resultados están en evidence/README.md. No es necesario repetir llamadas a Gemini para recrear esta entrega.
+
 Eres el integrante 3 de AI Support Engine. Lee `docs/persona-3.md`, `docs/contracts.md`, el README y el PDF del reto. Las partes de API, Gemini, motor tradicional y pantalla ya están implementadas.
 
 Trabaja en `develop`. Tu responsabilidad son pruebas, documentación y evidencias. No hagas commits ni push y no cambies configuraciones globales de Git. La integración final se realizará por separado, después de pedir los datos del autor.

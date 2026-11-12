@@ -1,0 +1,67 @@
+> ai-support-engine@1.0.0 test
+> node --test tests/*.test.js
+
+✔ API: ambos modos cumplen exactamente el contrato (111.3899ms)
+✔ API: recorta texto antes de pasarlo al motor y asigna mode desde el servidor (16.5905ms)
+✔ API: señales de seguridad fuerzan revisión sin sustituir clasificación (8.0459ms)
+✔ API: valida campos, tipos, espacios, límites y campos adicionales (31.9195ms)
+✔ API: JSON mal formado, tamaño y tipo de contenido (13.5023ms)
+✔ API: método y rutas privadas (13.8867ms)
+[analyze] INTERNAL_ERROR
+[analyze] GEMINI_TIMEOUT
+✔ API: errores inesperados y del proveedor conservan JSON y ocultan secretos (21.0699ms)
+[analyze] GEMINI_NOT_CONFIGURED
+✔ API: tradicional funciona aunque Gemini carezca de clave (12.2746ms)
+[analyze] INVALID_ENGINE_RESULT
+✔ API: rechaza resultados internos inválidos (9.0696ms)
+✔ pantalla: archivos enlazados se sirven con tipos correctos y cabeceras (23.5424ms)
+✔ referencias: 12 casos, distribución, categorías y prioridades (5.815ms)
+✔ referencias: rechaza duplicados, cantidad, distribución y cobertura incorrectas (2.3205ms)
+✔ evaluación: acierto conjunto y revisión independiente (1.246ms)
+✔ evaluación: errores y contratos inválidos nunca cuentan como aciertos (0.426ms)
+✔ métricas: usa 12 como denominador e incluye errores (0.505ms)
+✔ reportes: escapa CSV y Markdown y conserva respuestas (0.8251ms)
+✔ tradicional: acceso y acentos (7.0351ms)
+✔ tradicional: bloqueo de trabajo (1.0156ms)
+✔ tradicional: error habitual (1.2181ms)
+✔ tradicional: defecto visual (0.3351ms)
+✔ tradicional: caída general (0.2407ms)
+✔ tradicional: mejora (0.2107ms)
+✔ tradicional: posible incidente (0.1959ms)
+✔ tradicional: incidente activo (0.3588ms)
+✔ tradicional: fallback (0.3607ms)
+✔ tradicional: seguridad tiene precedencia y no obedece órdenes de rebajar prioridad (0.5197ms)
+✔ protección común conserva categoría, prioridad y respuesta (0.2728ms)
+✔ Gemini: solicitud estructurada y validación del resultado (1.499ms)
+✔ Gemini: falta de clave no invoca un modelo ni simula respuesta (0.7175ms)
+✔ Gemini rechaza texto sin JSON (0.4526ms)
+✔ Gemini rechaza JSON con fences (0.1901ms)
+✔ Gemini rechaza categoría inválida (0.2698ms)
+✔ Gemini rechaza prioridad inválida (0.2154ms)
+✔ Gemini rechaza booleano incorrecto (0.196ms)
+✔ Gemini rechaza respuesta vacía (0.4316ms)
+✔ Gemini rechaza campo adicional (0.257ms)
+✔ Gemini rechaza mode suministrado por el modelo (0.2924ms)
+✔ Gemini rechaza campo ausente (0.3287ms)
+✔ Gemini rechaza null (0.1772ms)
+✔ Gemini: bloqueo SAFETY (0.2423ms)
+✔ Gemini: bloqueo BLOCKLIST (0.1391ms)
+✔ Gemini: bloqueo PROHIBITED_CONTENT (0.2114ms)
+✔ Gemini: bloqueo SPII (0.1522ms)
+✔ Gemini: bloqueo RECITATION (0.1792ms)
+✔ Gemini: bloqueo del prompt y respuesta truncada (0.3601ms)
+✔ Gemini: error 429 sin detalles privados (0.5576ms)
+✔ Gemini: error 401 sin detalles privados (0.2608ms)
+✔ Gemini: error 403 sin detalles privados (0.2148ms)
+✔ Gemini: error 404 sin detalles privados (0.2708ms)
+✔ Gemini: error 500 sin detalles privados (0.2128ms)
+✔ Gemini: clave inválida con HTTP 400 se informa como autenticación (0.357ms)
+✔ Gemini: timeout cancela la señal y devuelve 504 (15.9563ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 808.4119

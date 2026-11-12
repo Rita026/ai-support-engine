@@ -1,5 +1,7 @@
 # Integrante 3: pruebas, documentación y evidencias
 
+> Estado de entrega: esta parte ya fue implementada con asistencia de IA para katherine920. La suite, comparación real y documentación están en el repositorio. Se conserva a continuación el encargo original para explicar el reparto. Consulta evidence/README.md para resultados y limitaciones actuales.
+
 ## Estado y objetivo
 
 Las partes 1 y 2 contienen la API, integración real de Gemini, motor tradicional y pantalla. Tu entrega completa la práctica mediante pruebas reproducibles y resultados observados. Lee el PDF original, el README y [el contrato](contracts.md) antes de modificar archivos.

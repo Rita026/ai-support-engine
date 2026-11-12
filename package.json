@@ -1,0 +1,19 @@
+{
+  "name": "ai-support-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clasificación de solicitudes de soporte con reglas y Gemini.",
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js"
+  },
+  "dependencies": {
+    "@google/genai": "3.3.0",
+    "express": "5.3.0",
+    "zod": "4.6.7"
+  }
+}

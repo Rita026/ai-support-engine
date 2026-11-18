@@ -2,7 +2,7 @@
   "name": "ai-support-engine",
   "version": "1.0.0",
   "private": true,
-  "description": "Clasificación de solicitudes de soporte con reglas y Gemini.",
+  "description": "Clasificación de solicitudes de soporte con reglas, Gemini y machine learning.",
   "type": "module",
   "engines": {
     "node": "24.x"

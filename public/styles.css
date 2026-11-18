@@ -76,9 +76,10 @@ summary { cursor: pointer; font-size: 12px; color: #5a715e; padding: 4px 0; }
 .comparison-summary p { font-size: 12px; line-height: 1.65; margin: 5px 0 0; }
 .comparison-summary[data-state='difference'], .comparison-summary[data-state='partial'] { background: #fff5e4; color: #7b5b22; border-color: #eadab9; }
 .results { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
-.results.is-comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.results.is-comparison { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .result-card { background: white; border: 1px solid var(--border); border-top: 3px solid var(--green); border-radius: 11px; padding: 21px; min-width: 0; }
 .result-card[data-mode='generative'] { border-top-color: #7388c1; }
+.result-card[data-mode='ml'] { border-top-color: #b0793a; }
 .result-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #edf0e9; }
 .engine-name { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: -.3px; }
 .engine-description { margin: 5px 0 0; color: #6b7d70; font-size: 11px; line-height: 1.6; }
@@ -115,5 +116,6 @@ pre { background: #f4f7f0; padding: 13px; font: 11px/1.65 Consolas, monospace; b
 footer { display: flex; justify-content: space-between; gap: 15px; border-top: 1px solid var(--border); padding: 19px 0 25px; color: #7f907c; font-size: 11px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; } }
-@media (max-width: 850px) { .workspace { grid-template-columns: minmax(0, 1fr); } .methods { grid-template-columns: repeat(3, minmax(0, 1fr)); } .method-option { padding: 13px 10px; gap: 8px; } .method-title { font-size: 12px; } .recommended { font-size: 8px; } .results.is-comparison { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 1000px) { .results.is-comparison { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 850px) { .workspace { grid-template-columns: minmax(0, 1fr); } .methods { grid-template-columns: repeat(2, minmax(0, 1fr)); } .method-option { padding: 13px 10px; gap: 8px; } .method-title { font-size: 12px; } .recommended { font-size: 8px; } .results.is-comparison { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 560px) { .page { padding: 0 16px; } .header { min-height: 72px; } .brand { font-size: 17px; gap: 9px; } .brand-icon { width: 32px; height: 32px; font-size: 16px; } .project-tag { font-size: 10px; } .intro { padding: 26px 0 22px; } .intro > p { font-size: 13px; } .workspace { gap: 14px; } .request-card, .settings-card { padding: 18px; } .methods { grid-template-columns: 1fr; } .method-title { font-size: 13px; } .method-option { min-height: 65px; padding: 12px; } .recommended { font-size: 9px; } .section-heading { margin-bottom: 14px; } textarea { font-size: 16px; min-height: 177px; } .input-meta { font-size: 10px; } .example-buttons { gap: 7px; } .example-buttons button { min-height: 41px; font-size: 11px; } .shortcut { display: none; } .results-heading { display: block; } .status { margin-top: 9px; font-size: 11px; } .empty-state { padding: 20px 15px; gap: 12px; align-items: flex-start; } .empty-state h3 { font-size: 14px; } .empty-state p { font-size: 11px; } .empty-icon { width: 35px; height: 35px; font-size: 23px; } .result-card { padding: 18px; } .engine-state { font-size: 9px; } .classification { gap: 10px; } .category { font-size: 14px; } .response-heading { gap: 8px; } .copy-button { font-size: 11px; } footer { flex-direction: column; gap: 8px; font-size: 10px; } }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Clasifica una solicitud de soporte y compara las respuestas de reglas y Gemini.">
+    <meta name="description" content="Clasifica una solicitud de soporte y compara las respuestas de reglas, Gemini y machine learning.">
     <title>AI Support Engine</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/styles.css">
@@ -41,9 +41,10 @@
             <div class="section-heading"><div class="heading-title"><span class="step">2</span><h2 id="method-title">Elige cómo analizar</h2></div></div>
             <fieldset class="methods" aria-describedby="method-help">
               <legend class="sr-only">Método de análisis</legend>
-              <label class="method-option"><input type="radio" name="mode" value="compare" checked><span class="method-copy"><span class="method-title">Comparar ambos <span class="recommended">Recomendado</span></span><span class="method-description">Ve las dos respuestas y sus diferencias.</span></span></label>
+              <label class="method-option"><input type="radio" name="mode" value="compare" checked><span class="method-copy"><span class="method-title">Comparar los tres <span class="recommended">Recomendado</span></span><span class="method-description">Ve las tres respuestas y sus diferencias.</span></span></label>
               <label class="method-option"><input type="radio" name="mode" value="traditional"><span class="method-copy"><span class="method-title">Usar reglas</span><span class="method-description">Análisis rápido con respuestas predefinidas.</span></span></label>
               <label class="method-option"><input type="radio" name="mode" value="generative"><span class="method-copy"><span class="method-title">Usar Gemini</span><span class="method-description">Una respuesta adaptada a tu solicitud.</span></span></label>
+              <label class="method-option"><input type="radio" name="mode" value="ml"><span class="method-copy"><span class="method-title">Usar machine learning</span><span class="method-description">Un modelo entrenado con tickets de ejemplo.</span></span></label>
             </fieldset>
             <button id="analyze-button" class="button primary" type="submit"><span id="submit-label">Comparar resultados</span><span class="button-arrow" aria-hidden="true">→</span></button>
             <p id="method-help" class="method-help">Comparar incluye un análisis con Gemini y puede tardar unos segundos.</p>
@@ -61,7 +62,7 @@
 
         <aside class="review-note"><span aria-hidden="true">ⓘ</span><p>Las respuestas son sugerencias. Revísalas antes de enviarlas; los posibles incidentes de seguridad requieren atención humana.</p></aside>
       </main>
-      <footer><span>AI Support Engine</span><span>Reglas + Gemini · Prototipo académico</span></footer>
+      <footer><span>AI Support Engine</span><span>Reglas + Gemini + Machine learning · Prototipo académico</span></footer>
     </div>
 
     <template id="result-template">

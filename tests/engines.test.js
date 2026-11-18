@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { analyzeTraditional } from '../src/engines/traditional.js';
 import { createGenerativeAnalyzer } from '../src/engines/generative.js';
+import { createMlAnalyzer, predictEndpoint } from '../src/engines/ml.js';
 import { resultSchema } from '../src/contracts.js';
 import { applySafetyReview } from '../src/safety.js';
 
@@ -109,5 +110,77 @@ test('Gemini: timeout cancela la señal y devuelve 504', async () => {
   let signal;
   const client = { models: { generateContent: ({ config }) => { signal = config.abortSignal; return new Promise(() => {}); } } };
   await assert.rejects(createGenerativeAnalyzer({ client, timeoutMs: 15 })('Ticket'), (error) => error.status === 504 && error.code === 'GEMINI_TIMEOUT');
+  assert.equal(signal.aborted, true);
+});
+
+const mlPayload = { ...analysis, confidence: { category: 0.91, priority: 0.82 }, modelVersion: 'test-version' };
+const jsonResponse = (body, status = 200) => new Response(typeof body === 'string' ? body : JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+const mlReturning = (body, status) => createMlAnalyzer({ baseUrl: 'http://127.0.0.1:9', fetchImpl: async () => jsonResponse(body, status) });
+
+test('ML: envía el ticket al servicio y devuelve solo el contrato público', async () => {
+  let request;
+  const analyze = createMlAnalyzer({
+    baseUrl: 'http://127.0.0.1:9',
+    fetchImpl: async (url, init) => { request = { url: String(url), init }; return jsonResponse(mlPayload); },
+  });
+  const result = await analyze('Ticket de prueba');
+  assert.deepEqual(result, { ...analysis, mode: 'ml' });
+  assert.ok(resultSchema.safeParse(result).success);
+  assert.equal(request.url, 'http://127.0.0.1:9/predict');
+  assert.equal(request.init.method, 'POST');
+  assert.equal(request.init.headers['Content-Type'], 'application/json');
+  assert.deepEqual(JSON.parse(request.init.body), { message: 'Ticket de prueba' });
+  assert.ok(request.init.signal instanceof AbortSignal);
+  assert.equal(request.init.redirect, 'error');
+});
+
+test('ML: URL del servicio con ruta base y URLs inválidas', async () => {
+  assert.equal(String(predictEndpoint('http://localhost:8000')), 'http://localhost:8000/predict');
+  assert.equal(String(predictEndpoint('https://ml.example.com/api/')), 'https://ml.example.com/api/predict');
+  for (const value of ['no-es-url', 'ftp://localhost', 'http://usuario:clave@localhost', 'http://localhost/?a=1', 'http://localhost/#x']) {
+    assert.equal(predictEndpoint(value), null, value);
+  }
+  await assert.rejects(createMlAnalyzer({ baseUrl: 'no-es-url' })('Ticket'), (error) => error.status === 503 && error.code === 'ML_NOT_CONFIGURED');
+});
+
+for (const [label, body] of [
+  ['texto sin JSON', 'no es JSON'],
+  ['categoría inválida', { ...mlPayload, category: 'OTHER' }],
+  ['prioridad inválida', { ...mlPayload, priority: 'URGENT' }],
+  ['respuesta vacía', { ...mlPayload, response: ' ' }],
+  ['confianza fuera de rango', { ...mlPayload, confidence: { category: 1.5, priority: 0.5 } }],
+  ['sin confianza', { ...analysis, modelVersion: 'x' }],
+  ['campo adicional', { ...mlPayload, extra: true }],
+  ['mode suministrado por el servicio', { ...mlPayload, mode: 'ml' }],
+  ['null', 'null'],
+]) {
+  test(`ML rechaza ${label}`, async () => {
+    await assert.rejects(mlReturning(body)('Ticket'), (error) => error.status === 502 && error.code === 'ML_INVALID_RESPONSE');
+  });
+}
+
+for (const [status, expectedStatus, code] of [[503, 503, 'ML_NOT_READY'], [500, 502, 'ML_UNAVAILABLE'], [400, 502, 'ML_UNAVAILABLE'], [404, 502, 'ML_UNAVAILABLE']]) {
+  test(`ML: HTTP ${status} del servicio se informa como ${code}`, async () => {
+    await assert.rejects(mlReturning({ error: { code: 'X', message: 'detalle-interno-privado' } }, status)('Ticket'), (error) => {
+      assert.equal(error.status, expectedStatus);
+      assert.equal(error.code, code);
+      assert.ok(!error.message.includes('detalle-interno-privado'));
+      return true;
+    });
+  });
+}
+
+test('ML: servicio apagado devuelve 503 sin detalles de red', async () => {
+  const analyze = createMlAnalyzer({ fetchImpl: async () => { throw new TypeError('fetch failed ECONNREFUSED 127.0.0.1:8000'); } });
+  await assert.rejects(analyze('Ticket'), (error) => error.status === 503 && error.code === 'ML_UNAVAILABLE' && !error.message.includes('ECONNREFUSED'));
+});
+
+test('ML: timeout cancela la petición y devuelve 504', async () => {
+  let signal;
+  const fetchImpl = (_url, init) => new Promise((_resolve, reject) => {
+    signal = init.signal;
+    init.signal.addEventListener('abort', () => reject(init.signal.reason));
+  });
+  await assert.rejects(createMlAnalyzer({ fetchImpl, timeoutMs: 15 })('Ticket'), (error) => error.status === 504 && error.code === 'ML_TIMEOUT');
   assert.equal(signal.aborted, true);
 });

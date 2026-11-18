@@ -2,24 +2,46 @@
 
 ## Pruebas automáticas
 
-`npm test`: 52 pruebas aprobadas, 0 fallos. El registro íntegro está en [unit-tests.txt](unit-tests.txt). La suite no llama a Gemini real; usa clientes falsos únicamente para pruebas deterministas de esquema, bloqueos, errores, cuota y timeout.
+- `npm test`: 72 pruebas aprobadas, 0 fallos. Registro en [unit-tests.txt](unit-tests.txt). La suite no llama a Gemini ni al servicio ML reales: usa clientes y `fetch` falsos solo para probar de forma determinista el esquema, los bloqueos, los errores, la cuota, el servicio apagado y los timeouts.
+- `pytest` en `ml-service/`: 40 pruebas aprobadas, 0 fallos. Registro en [ml-tests.txt](ml-tests.txt). Cubren:
+  - el formato, el balance y la política del dataset;
+  - que no haya fuga hacia los fixtures;
+  - que el CSV coincida con el generador determinista;
+  - la generalización del modelo a escenarios no vistos y la comparación con el baseline del ejemplo;
+  - la restricción de prioridades por categoría;
+  - el rechazo de modelos incompatibles;
+  - el contrato HTTP del servicio FastAPI.
 
-Se detectó y corrigió el reconocimiento de «cuenta está bloqueada». También se integró la corrección local de URLs de los recursos estáticos: `/app.js` y `/styles.css`. La prueba de pantalla comprueba los enlaces del HTML, respuestas HTTP, tipos de contenido y cabeceras.
+Se detectó y corrigió el reconocimiento de «cuenta está bloqueada». También se integró la corrección local de las URLs de los recursos estáticos: `/app.js` y `/styles.css`. La prueba de pantalla comprueba los enlaces del HTML, las respuestas HTTP, los tipos de contenido y las cabeceras.
+
+## Motor de machine learning
+
+El dataset, el entrenamiento y sus métricas están documentados en [ml-service/data/README.md](../ml-service/data/README.md) y [training_report.md](../ml-service/reports/training_report.md). La evaluación honesta usa particiones por escenario (`template_id`), porque una partición aleatoria mezcla redacciones del mismo escenario y da cifras optimistas (98.75 % frente a ~80 %).
+
+La evaluación directa del modelo con los 12 fixtures ([fixtures_eval.md](../ml-service/reports/fixtures_eval.md)) se consultó durante el desarrollo. Los ajustes posteriores del dataset fueron genéricos, se validaron con 30 casos de desarrollo redactados aparte y no se escribieron a partir de los fixtures. Esto se declara para que la cifra de 10/12 se interprete con esa cautela.
 
 ## Comparación real
 
-La evidencia final es la enlazada en [README.md](README.md). Contiene 24 intentos: 12 por motor, sin reintentos y con referencias previamente fijadas. El script conserva respuestas y errores; no se excluyen fallos del denominador.
+La evidencia final está enlazada en [README.md](README.md). Contiene 36 intentos: 12 por motor, sin reintentos y con referencias fijadas previamente. El script comprueba primero que el servicio ML responda, para no gastar llamadas a Gemini. Conserva respuestas y errores, y no excluye fallos del denominador. Antes de ejecutar se hizo una única llamada manual a Gemini para validar la clave.
 
-La primera ejecución contra el puerto 3000 se interrumpió porque ese puerto estaba ocupado por otra instancia. Se conservan sus respuestas parciales y el motivo en su carpeta. La ejecución completa utiliza una instancia controlada en el puerto 3101, iniciada después de las correcciones. No se cambiaron los tickets, referencias, reglas ni prompt después de observar esa comparación.
+La comparación de la entrega anterior, con dos motores, se conserva sin cambios. Su primera ejecución contra el puerto 3000 se interrumpió porque el puerto pertenecía a otra instancia; ese intento también se conserva.
 
 ## Interfaz y capturas
 
-Verificado automáticamente: HTML, CSS, JavaScript y favicon accesibles, rutas privadas inaccesibles, respuestas con cabeceras y tipos correctos. El cliente inserta resultados como texto y no contiene la clave de Gemini.
+Verificado automáticamente:
+- HTML, CSS, JavaScript y favicon accesibles;
+- rutas privadas inaccesibles;
+- cabeceras y tipos de contenido correctos;
+- el cliente inserta los resultados como texto y no contiene la clave de Gemini.
 
-No se pudo ejecutar la comprobación visual de escritorio/móvil ni capturar el navegador: el host del navegador y la conexión nativa a aplicaciones estaban indisponibles. Esta limitación se declara expresamente. Los archivos JSON y las tablas son evidencia real de ejecución de la API; no se presentan como capturas de la interfaz.
+La interfaz se recorrió en Chrome sin interfaz gráfica, controlado por un script, en escritorio (1280 px) y móvil (390 px):
+- comparación de los tres motores;
+- selección de cada método;
+- estado parcial cuando Gemini no está configurado;
+- ausencia de desplazamiento horizontal en móvil.
 
-Para completar la revisión visual manual: iniciar `npm start`, abrir la pantalla, probar los cuatro ejemplos, comparar ambos motores, desplegar el JSON y verificar un caso SECURITY con revisión humana. Revisar también un mensaje vacío, un error de proveedor y un ancho de móvil. Guardar capturas únicamente de resultados reales y sin secretos.
+Las capturas están en [ui/](ui/). Son reales y no contienen secretos. Se tomaron con Gemini sin configurar, por lo que su tarjeta muestra el error esperado.
 
 ## Credenciales y despliegue
 
-La clave permanece en `.env`, excluido de Git y fuera de los recursos estáticos. No se modifican las identidades globales de Git ni la sesión autenticada. El despliegue en Vercel se deja preparado pero no se realiza.
+La clave permanece en `.env`, excluido de Git y fuera de los recursos estáticos. El servicio ML no registra el contenido de los tickets. El despliegue en Vercel se deja preparado para los motores tradicional y generativo, pero no se realiza. El servicio Python no se ejecuta en Vercel; ahí el modo `ml` responde `ML_UNAVAILABLE` salvo que `ML_SERVICE_URL` apunte a un servicio publicado.

@@ -51,6 +51,8 @@ test('métricas: usa 12 como denominador e incluye errores', () => {
   assert.equal(summary.traditional.averageLatencyMs, 20);
   assert.equal(summary.generative.accuracyPercent, 0);
   assert.equal(summary.generative.averageLatencyMs, null);
+  assert.deepEqual(Object.keys(summary), ['traditional', 'generative', 'ml']);
+  assert.equal(summary.ml.attempts, 0);
 });
 
 test('reportes: escapa CSV y Markdown y conserva respuestas', () => {
@@ -58,8 +60,17 @@ test('reportes: escapa CSV y Markdown y conserva respuestas', () => {
   assert.equal(markdownCell('A|B\nC'), 'A\\|B<br>C');
   const row = { caseId: 'x', kind: 'normal', message: 'A|B', expected, mode: 'traditional', httpStatus: 200, latencyMs: 1, ...evaluate(expected, 'traditional', 200, result), result, error: null };
   assert.ok(renderCsv([row]).includes('""comillas""'));
-  const markdown = renderMarkdown({ startedAt: 'fecha', model: 'modelo', fixturesSha256: 'hash', summary: summarize([row]), rows: [row], complete: false });
+  const markdown = renderMarkdown({ startedAt: 'fecha', model: 'modelo', mlModelVersion: 'ml-v1', fixturesSha256: 'hash', summary: summarize([row]), rows: [row], complete: false });
   assert.ok(markdown.includes('8.33%'));
   assert.ok(markdown.includes('ACCESS / MEDIUM'));
   assert.ok(markdown.includes('Ejecución con errores'));
+  assert.ok(markdown.includes('| ml | 0/12 |'));
+  assert.ok(markdown.includes('`ml-v1`'));
+});
+
+test('evaluación: el modo ml se valida con el mismo contrato', () => {
+  const mlResult = { ...result, mode: 'ml' };
+  assert.equal(evaluate(expected, 'ml', 200, mlResult).correct, true);
+  assert.equal(evaluate(expected, 'ml', 200, { ...mlResult, confidence: 0.9 }).formatValid, false);
+  assert.equal(evaluate(expected, 'ml', 200, result).formatValid, false);
 });

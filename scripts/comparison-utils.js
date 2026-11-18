@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import { CATEGORIES, PRIORITIES, resultSchema } from '../src/contracts.js';
+import { CATEGORIES, MODES, PRIORITIES, resultSchema } from '../src/contracts.js';
+
+export const CASE_COUNT = 12;
 
 const caseSchema = z.object({
   id: z.string().min(1),
@@ -10,8 +12,8 @@ const caseSchema = z.object({
 }).strict();
 
 export function validateCases(value) {
-  const cases = z.array(caseSchema).length(12).parse(value);
-  if (new Set(cases.map((entry) => entry.id)).size !== 12) throw new Error('Los identificadores de casos deben ser únicos.');
+  const cases = z.array(caseSchema).length(CASE_COUNT).parse(value);
+  if (new Set(cases.map((entry) => entry.id)).size !== CASE_COUNT) throw new Error('Los identificadores de casos deben ser únicos.');
   for (const [kind, count] of [['normal', 8], ['ambiguous', 2], ['injection', 2]]) {
     if (cases.filter((entry) => entry.kind === kind).length !== count) throw new Error(`Se requieren ${count} casos de tipo ${kind}.`);
   }
@@ -38,13 +40,13 @@ export function evaluate(expected, mode, httpStatus, value) {
 }
 
 export function summarize(rows) {
-  return Object.fromEntries(['traditional', 'generative'].map((mode) => {
+  return Object.fromEntries(MODES.map((mode) => {
     const attempts = rows.filter((row) => row.mode === mode);
     const correct = attempts.filter((row) => row.correct).length;
     return [mode, {
       attempts: attempts.length,
       correct,
-      accuracyPercent: Number((correct / 12 * 100).toFixed(2)),
+      accuracyPercent: Number((correct / CASE_COUNT * 100).toFixed(2)),
       validFormat: attempts.filter((row) => row.formatValid).length,
       correctCategory: attempts.filter((row) => row.categoryCorrect).length,
       correctPriority: attempts.filter((row) => row.priorityCorrect).length,
@@ -65,16 +67,18 @@ export function renderCsv(rows) {
 }
 
 export function renderMarkdown(report) {
-  const lines = ['# Resultados comparativos', '', `Fecha UTC: ${report.startedAt}`, '', `Modelo declarado en el servidor local: \`${report.model}\``, '', `SHA-256 de referencias: \`${report.fixturesSha256}\``, '', 'Acierto = categoría y prioridad correctas. Revisión humana se evalúa por separado. Los errores cuentan dentro de los 12 intentos de cada motor.', '', '| Motor | Aciertos | Precisión | Formato válido | Revisión correcta | Errores HTTP/red | Latencia media |', '| --- | --- | --- | --- | --- | --- | --- |'];
-  for (const mode of ['traditional', 'generative']) {
+  const lines = ['# Resultados comparativos', '', `Fecha UTC: ${report.startedAt}`, '', `Modelo Gemini declarado en el servidor local: \`${report.model}\``, ''];
+  if (report.mlModelVersion) lines.push(`Versión del modelo de machine learning: \`${report.mlModelVersion}\``, '');
+  lines.push(`SHA-256 de referencias: \`${report.fixturesSha256}\``, '', `Acierto = categoría y prioridad correctas. Revisión humana se evalúa por separado. Los errores cuentan dentro de los ${CASE_COUNT} intentos de cada motor.`, '', '| Motor | Aciertos | Precisión | Formato válido | Revisión correcta | Errores HTTP/red | Latencia media |', '| --- | --- | --- | --- | --- | --- | --- |');
+  for (const mode of MODES) {
     const entry = report.summary[mode];
-    lines.push(`| ${mode} | ${entry.correct}/12 | ${entry.accuracyPercent}% | ${entry.validFormat}/12 | ${entry.correctHumanReview}/12 | ${entry.errors} | ${entry.averageLatencyMs} ms |`);
+    lines.push(`| ${mode} | ${entry.correct}/${CASE_COUNT} | ${entry.accuracyPercent}% | ${entry.validFormat}/${CASE_COUNT} | ${entry.correctHumanReview}/${CASE_COUNT} | ${entry.errors} | ${entry.averageLatencyMs} ms |`);
   }
   lines.push('', '## Detalle por intento', '', '| Caso | Tipo | Motor | Referencia | Resultado | Revisión | Formato | Acierto | HTTP |', '| --- | --- | --- | --- | --- | --- | --- | --- | --- |');
   for (const row of report.rows) {
     const obtained = row.formatValid ? `${row.result.category} / ${row.result.priority}` : row.error?.code || 'ERROR';
     lines.push(`| ${[row.caseId, row.kind, row.mode, `${row.expected.category} / ${row.expected.priority}`, obtained, row.result?.requiresHumanReview ?? '-', row.formatValid ? 'Sí' : 'No', row.correct ? 'Sí' : 'No', row.httpStatus ?? 'RED'].map(markdownCell).join(' | ')} |`);
   }
-  lines.push('', '## Interpretación y límites', '', '- Referencias y mensajes completos, justificaciones y respuestas reales están incluidos en results.json y results.csv.', '- Ambos motores reciben los mismos mensajes y usan la misma protección de revisión humana. Esa protección no modifica la categoría ni la prioridad.', '- Una única ejecución con 12 tickets sintéticos no demuestra superioridad general; Gemini puede variar entre ejecuciones.', `- Estado: ${report.complete ? '24 respuestas válidas registradas.' : 'Ejecución con errores o respuestas inválidas; revisar los intentos registrados.'}`, '');
+  lines.push('', '## Interpretación y límites', '', '- Referencias y mensajes completos, justificaciones y respuestas reales están incluidos en results.json y results.csv.', '- Los tres motores reciben los mismos mensajes y usan la misma protección de revisión humana. Esa protección no modifica la categoría ni la prioridad.', `- Una única ejecución con ${CASE_COUNT} tickets sintéticos no demuestra superioridad general; Gemini puede variar entre ejecuciones y el modelo de machine learning es determinista para una versión dada.`, `- Estado: ${report.complete ? `${report.rows.length} respuestas válidas registradas.` : 'Ejecución con errores o respuestas inválidas; revisar los intentos registrados.'}`, '');
   return lines.join('\n');
 }

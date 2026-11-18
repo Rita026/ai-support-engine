@@ -1,0 +1,50 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-8.3.5, pluggy-1.6.0 -- ~/Downloads/ai-support-engine/ml-service/.venv/bin/python
+rootdir: ~/Downloads/ai-support-engine/ml-service
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.12.1
+collecting ... collected 40 items
+
+tests/test_api.py::test_health PASSED                                    [  2%]
+tests/test_api.py::test_prediccion_cumple_el_contrato PASSED             [  5%]
+tests/test_api.py::test_no_repite_el_contenido_del_ticket PASSED         [  7%]
+tests/test_api.py::test_validacion_de_entrada[body0] PASSED              [ 10%]
+tests/test_api.py::test_validacion_de_entrada[body1] PASSED              [ 12%]
+tests/test_api.py::test_validacion_de_entrada[body2] PASSED              [ 15%]
+tests/test_api.py::test_validacion_de_entrada[body3] PASSED              [ 17%]
+tests/test_api.py::test_validacion_de_entrada[body4] PASSED              [ 20%]
+tests/test_api.py::test_validacion_de_entrada[body5] PASSED              [ 22%]
+tests/test_api.py::test_validacion_de_entrada[body6] PASSED              [ 25%]
+tests/test_api.py::test_validacion_de_entrada[body7] PASSED              [ 27%]
+tests/test_api.py::test_validacion_de_entrada[texto] PASSED              [ 30%]
+tests/test_api.py::test_limites_de_longitud PASSED                       [ 32%]
+tests/test_api.py::test_json_tipo_y_tamano PASSED                        [ 35%]
+tests/test_api.py::test_metodo_y_rutas PASSED                            [ 37%]
+tests/test_api.py::test_sin_modelo_responde_503 PASSED                   [ 40%]
+tests/test_dataset.py::test_columnas_tamano_e_identificadores PASSED     [ 42%]
+tests/test_dataset.py::test_etiquetas_validas_y_balance_de_categorias PASSED [ 45%]
+tests/test_dataset.py::test_politica_de_prioridades PASSED               [ 47%]
+tests/test_dataset.py::test_variantes_dificiles_presentes PASSED         [ 50%]
+tests/test_dataset.py::test_sin_duplicados_normalizados PASSED           [ 52%]
+tests/test_dataset.py::test_escenarios_suficientes_para_particion_por_grupo PASSED [ 55%]
+tests/test_dataset.py::test_sin_fuga_hacia_los_casos_de_la_comparacion PASSED [ 57%]
+tests/test_dataset.py::test_casos_de_desarrollo_independientes PASSED    [ 60%]
+tests/test_dataset.py::test_el_csv_coincide_con_el_generador_determinista PASSED [ 62%]
+tests/test_model.py::test_generaliza_a_escenarios_no_vistos PASSED       [ 65%]
+tests/test_model.py::test_supera_al_baseline_del_ejemplo_en_categoria PASSED [ 67%]
+tests/test_model.py::test_categorias_de_casos_claros[Alguien entr\xf3 a mi cuenta sin autorizaci\xf3n-SECURITY] PASSED [ 70%]
+tests/test_model.py::test_categorias_de_casos_claros[Encontr\xe9 una vulnerabilidad en el login-SECURITY] PASSED [ 72%]
+tests/test_model.py::test_categorias_de_casos_claros[Me gustar\xeda poder exportar los reportes a Excel-FEATURE] PASSED [ 75%]
+tests/test_model.py::test_categorias_de_casos_claros[Quiero que agreguen modo oscuro-FEATURE] PASSED [ 77%]
+tests/test_model.py::test_categorias_de_casos_claros[La app no abre-BUG] PASSED [ 80%]
+tests/test_model.py::test_categorias_de_casos_claros[No me llega el c\xf3digo de verificaci\xf3n-ACCESS] PASSED [ 82%]
+tests/test_model.py::test_caida_general_es_critica PASSED                [ 85%]
+tests/test_model.py::test_seguridad_siempre_requiere_revision PASSED     [ 87%]
+tests/test_model.py::test_manipulacion_no_rebaja_un_incidente_de_seguridad PASSED [ 90%]
+tests/test_model.py::test_prioridad_restringida_por_categoria PASSED     [ 92%]
+tests/test_model.py::test_contrato_del_predictor PASSED                  [ 95%]
+tests/test_model.py::test_respuestas_predefinidas_y_nota_de_baja_confianza PASSED [ 97%]
+tests/test_model.py::test_rechaza_modelos_incompatibles_o_ausentes PASSED [100%]
+
+============================== 40 passed in 2.43s ==============================

@@ -1,0 +1,10 @@
+# Compatible con Python 3.9+. Versiones exactas para entrenamientos reproducibles.
+numpy==2.0.2
+pandas==2.2.3
+scikit-learn==1.6.1
+joblib==1.4.2
+fastapi==0.115.12
+pydantic==2.11.4
+uvicorn==0.34.2
+pytest==8.3.5
+httpx==0.28.1

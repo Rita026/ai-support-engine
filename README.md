@@ -34,7 +34,11 @@ ML_SERVICE_URL=http://127.0.0.1:8000
 npm start
 ```
 
-Abre <http://127.0.0.1:3000>. `npm run dev` reinicia el servidor al modificar código. El motor tradicional funciona sin clave; Gemini requiere una clave válida y cuota disponible; el modo ML requiere el servicio Python en ejecución. Reinicia el servidor después de cambiar `.env`.
+Abre <http://127.0.0.1:3000>. `npm start` inicia solo el servidor web.
+
+Para desarrollar, `npm run dev` inicia con [concurrently](https://www.npmjs.com/package/concurrently) el servidor web (`[web]`) y el servicio de machine learning (`[ml]`) en la misma terminal, y ambos se reinician al modificar código. Requiere haber creado antes `ml-service/.venv` (ver la sección siguiente). `Ctrl + C` detiene los dos. Para iniciar solo el servicio ML sin recarga, usa `npm run start:ml`.
+
+El motor tradicional funciona sin clave; Gemini requiere una clave válida y cuota disponible; el modo ML requiere el servicio Python en ejecución. Reinicia el servidor después de cambiar `.env`.
 
 La clave no se envía al navegador, no se sirve como archivo estático y está excluida de Git. No compartas `.env`, contraseñas, códigos de recuperación ni datos sensibles en los tickets.
 

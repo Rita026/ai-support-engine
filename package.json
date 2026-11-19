@@ -2,14 +2,17 @@
   "name": "ai-support-engine",
   "version": "1.0.0",
   "private": true,
-  "description": "Clasificación de solicitudes de soporte con reglas y Gemini.",
+  "description": "Clasificación de solicitudes de soporte con reglas, Gemini y machine learning.",
   "type": "module",
   "engines": {
     "node": "24.x"
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
-    "dev": "node --env-file-if-exists=.env --watch server.js",
+    "dev": "concurrently --names web,ml --prefix-colors green,yellow \"npm:dev:web\" \"npm:dev:ml\"",
+    "dev:web": "node --env-file-if-exists=.env --watch server.js",
+    "dev:ml": "node --env-file-if-exists=.env scripts/ml-service.js --reload",
+    "start:ml": "node --env-file-if-exists=.env scripts/ml-service.js",
     "test": "node --test tests/*.test.js",
     "compare": "node --env-file-if-exists=.env scripts/compare.js"
   },
@@ -17,5 +20,8 @@
     "@google/genai": "3.3.0",
     "express": "5.3.0",
     "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "concurrently": "9.2.5"
   }
 }

@@ -19,7 +19,27 @@ let outcomes = new Map();
 
 const categories = { ACCESS: 'Acceso a la cuenta', BUG: 'Error del sistema', FEATURE: 'Nueva funcionalidad', SECURITY: 'Seguridad' };
 const priorities = { LOW: 'Baja', MEDIUM: 'Media', HIGH: 'Alta', CRITICAL: 'Crítica' };
-const engineNames = { traditional: 'Por reglas', generative: 'Con Gemini' };
+const engines = {
+  traditional: {
+    name: 'Por reglas', short: 'Reglas', action: 'con reglas',
+    description: 'Clasificación con reglas y respuesta predefinida',
+    loading: 'Revisando las reglas de clasificación…',
+    help: 'Este método no necesita una conexión con Gemini.',
+  },
+  generative: {
+    name: 'Con Gemini', short: 'Gemini', action: 'con Gemini',
+    description: 'Interpretación del contexto y respuesta personalizada',
+    loading: 'Gemini está preparando su respuesta…',
+    help: 'Gemini puede tardar unos segundos en preparar la respuesta.',
+  },
+  ml: {
+    name: 'Con machine learning', short: 'Machine learning', action: 'con machine learning',
+    description: 'Clasificación con un modelo entrenado y respuesta predefinida',
+    loading: 'El modelo está clasificando la solicitud…',
+    help: 'Este método usa el servicio de machine learning; debe estar en ejecución.',
+  },
+};
+const allEngines = Object.keys(engines);
 const examples = {
   access: 'No puedo iniciar sesión. El sistema indica que mi contraseña es incorrecta.',
   bug: 'Al guardar un documento aparece un error 500 y no puedo completar mi trabajo.',
@@ -31,11 +51,10 @@ const selectedMethod = () => methodInputs.find((input) => input.checked).value;
 
 function updateMethod() {
   const method = selectedMethod();
-  if (!busy) submitLabel.textContent = method === 'compare' ? 'Comparar resultados' : method === 'traditional' ? 'Analizar con reglas' : 'Analizar con Gemini';
+  if (!busy) submitLabel.textContent = method === 'compare' ? 'Comparar resultados' : `Analizar ${engines[method].action}`;
   document.querySelector('#method-help').textContent = method === 'compare'
-    ? 'Comparar incluye un análisis con Gemini y puede tardar unos segundos.'
-    : method === 'traditional' ? 'Este método no necesita una conexión con Gemini.'
-      : 'Gemini puede tardar unos segundos en preparar la respuesta.';
+    ? 'Comparar consulta los tres motores, incluido Gemini, y puede tardar unos segundos.'
+    : engines[method].help;
   if (emptyState.hidden === false) emptyState.querySelector('p').textContent = `Escribe tu mensaje o elige un ejemplo y pulsa ${submitLabel.textContent}.`;
 }
 
@@ -61,7 +80,7 @@ function setBusy(value) {
 function prepareCard(card, engine) {
   card.querySelector('.engine-state').textContent = 'Analizando';
   card.querySelector('.loading-state').hidden = false;
-  card.querySelector('.loading-text').textContent = engine === 'generative' ? 'Gemini está preparando su respuesta…' : 'Revisando las reglas de clasificación…';
+  card.querySelector('.loading-text').textContent = engines[engine].loading;
   card.querySelector('.result-body').hidden = true;
   card.querySelector('.error-box').hidden = true;
   card.querySelector('.copy-status').textContent = '';
@@ -72,9 +91,9 @@ function prepareCard(card, engine) {
 function createCard(engine, ticket) {
   const card = template.content.firstElementChild.cloneNode(true);
   card.dataset.mode = engine;
-  card.querySelector('.engine-name').textContent = engineNames[engine];
-  card.querySelector('.engine-description').textContent = engine === 'traditional' ? 'Clasificación con reglas y respuesta predefinida' : 'Interpretación del contexto y respuesta personalizada';
-  card.querySelector('.retry-button').textContent = engine === 'generative' ? 'Reintentar con Gemini' : 'Reintentar con reglas';
+  card.querySelector('.engine-name').textContent = engines[engine].name;
+  card.querySelector('.engine-description').textContent = engines[engine].description;
+  card.querySelector('.retry-button').textContent = `Reintentar ${engines[engine].action}`;
   card.querySelector('.retry-button').addEventListener('click', () => retry(engine, ticket, card));
   card.querySelector('.copy-button').addEventListener('click', async () => {
     const text = outcomes.get(engine)?.data?.response;
@@ -134,28 +153,48 @@ async function analyze(engine, ticket, card) {
   }
 }
 
+const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+const joinNames = (names) => (names.length > 1 ? `${names.slice(0, -1).join(', ')} y ${names.at(-1)}` : names[0]);
+
 function updateSummary() {
-  const entries = [...outcomes.values()];
-  const succeeded = entries.filter((entry) => entry.ok).length;
-  const compare = entries.length === 2;
-  status.textContent = succeeded === entries.length ? (compare ? '2 análisis completados' : 'Análisis completado')
-    : succeeded ? '1 resultado disponible · 1 motor con error' : 'No se pudo completar el análisis';
+  const entries = [...outcomes.entries()];
+  const total = entries.length;
+  const succeeded = entries.filter(([, entry]) => entry.ok);
+  const failed = total - succeeded.length;
+  const compare = total > 1;
+  status.textContent = failed === 0 ? (compare ? `${total} análisis completados` : 'Análisis completado')
+    : succeeded.length ? `${plural(succeeded.length, 'resultado disponible', 'resultados disponibles')} · ${plural(failed, 'motor', 'motores')} con error`
+      : 'No se pudo completar el análisis';
   comparison.hidden = !compare;
   if (!compare) return;
   let title;
   let detail;
   let state;
-  if (succeeded === 2) {
-    const first = entries[0].data;
-    const second = entries[1].data;
-    const agree = first.category === second.category && first.priority === second.priority;
-    title = agree ? 'Ambos motores coinciden' : 'Los motores proponen resultados diferentes';
-    detail = agree ? 'La categoría y la prioridad son iguales. Compara sus respuestas a continuación.' : 'Revisa la categoría, la prioridad y las respuestas antes de decidir el siguiente paso.';
-    if (first.requiresHumanReview !== second.requiresHumanReview) detail += ' La indicación de revisión humana es diferente.';
-    state = agree ? 'agreement' : 'difference';
+  if (succeeded.length >= 2) {
+    // Agrupa los motores que proponen la misma categoría y prioridad.
+    const groups = new Map();
+    for (const [engine, entry] of succeeded) {
+      const key = `${entry.data.category}|${entry.data.priority}`;
+      groups.set(key, [...(groups.get(key) || []), engines[engine].short]);
+    }
+    const agree = groups.size === 1;
+    if (agree) {
+      title = failed ? 'Los motores disponibles coinciden' : total === 3 ? 'Los tres motores coinciden' : 'Ambos motores coinciden';
+      detail = 'La categoría y la prioridad son iguales. Compara sus respuestas a continuación.';
+    } else {
+      const [majority, ...others] = [...groups.values()].sort((a, b) => b.length - a.length);
+      title = 'Los motores proponen resultados diferentes';
+      detail = majority.length > 1
+        ? `${joinNames(majority)} coinciden; ${joinNames(others.flat())} ${others.flat().length > 1 ? 'proponen' : 'propone'} otro resultado.`
+        : 'Cada motor propone una clasificación distinta.';
+      detail += ' Revisa la categoría, la prioridad y las respuestas antes de decidir el siguiente paso.';
+    }
+    if (new Set(succeeded.map(([, entry]) => entry.data.requiresHumanReview)).size > 1) detail += ' La indicación de revisión humana es diferente.';
+    if (failed) detail += ' Reintenta el motor que falló para completar la comparación.';
+    state = failed ? 'partial' : agree ? 'agreement' : 'difference';
   } else {
-    title = succeeded ? 'Puedes consultar el resultado disponible' : 'Los motores no pudieron responder';
-    detail = succeeded ? 'Reintenta el motor que falló para completar la comparación.' : 'Revisa los mensajes de error y vuelve a intentarlo.';
+    title = succeeded.length ? 'Puedes consultar el resultado disponible' : 'Los motores no pudieron responder';
+    detail = succeeded.length ? 'Reintenta los motores que fallaron para completar la comparación.' : 'Revisa los mensajes de error y vuelve a intentarlo.';
     state = 'partial';
   }
   comparison.dataset.state = state;
@@ -179,7 +218,7 @@ async function submit() {
     return;
   }
   const method = selectedMethod();
-  const engines = method === 'compare' ? ['traditional', 'generative'] : [method];
+  const selected = method === 'compare' ? allEngines : [method];
   lastTicket = ticket;
   outcomes = new Map();
   staleNotice.hidden = true;
@@ -188,16 +227,16 @@ async function submit() {
   context.hidden = false;
   document.querySelector('#analyzed-message').textContent = ticket;
   results.replaceChildren();
-  results.classList.toggle('is-comparison', engines.length === 2);
+  results.classList.toggle('is-comparison', selected.length > 1);
   emptyState.hidden = true;
   comparison.hidden = true;
-  const cards = engines.map((engine) => createCard(engine, ticket));
+  const cards = selected.map((engine) => createCard(engine, ticket));
   setBusy(true);
-  status.textContent = engines.length === 2 ? 'Comparando los dos motores…' : `Analizando ${method === 'traditional' ? 'con reglas' : 'con Gemini'}…`;
+  status.textContent = selected.length > 1 ? 'Comparando los tres motores…' : `Analizando ${engines[method].action}…`;
   focusResults();
   try {
-    const responses = await Promise.all(engines.map((engine, index) => analyze(engine, ticket, cards[index])));
-    engines.forEach((engine, index) => outcomes.set(engine, responses[index]));
+    const responses = await Promise.all(selected.map((engine, index) => analyze(engine, ticket, cards[index])));
+    selected.forEach((engine, index) => outcomes.set(engine, responses[index]));
     updateSummary();
   } finally { setBusy(false); }
 }
@@ -207,7 +246,7 @@ async function retry(engine, ticket, card) {
   prepareCard(card, engine);
   setBusy(true);
   comparison.hidden = true;
-  status.textContent = `Reintentando ${engine === 'generative' ? 'con Gemini' : 'con reglas'}…`;
+  status.textContent = `Reintentando ${engines[engine].action}…`;
   try {
     outcomes.set(engine, await analyze(engine, ticket, card));
     updateSummary();

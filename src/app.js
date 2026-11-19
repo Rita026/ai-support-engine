@@ -4,8 +4,14 @@ import { requestSchema, resultSchema } from './contracts.js';
 import { AppError } from './errors.js';
 import { applySafetyReview } from './safety.js';
 import { createGenerativeAnalyzer } from './engines/generative.js';
+import { createMlAnalyzer } from './engines/ml.js';
 
-export function createApp({ traditionalAnalyzer, generativeAnalyzer = createGenerativeAnalyzer() } = {}) {
+export function createApp({
+  traditionalAnalyzer,
+  generativeAnalyzer = createGenerativeAnalyzer(),
+  mlAnalyzer = createMlAnalyzer(),
+} = {}) {
+  const analyzers = { traditional: traditionalAnalyzer, generative: generativeAnalyzer, ml: mlAnalyzer };
   const app = express();
   app.disable('x-powered-by');
   app.use((_req, res, next) => {
@@ -26,10 +32,10 @@ export function createApp({ traditionalAnalyzer, generativeAnalyzer = createGene
     res.set('Cache-Control', 'no-store');
     const input = requestSchema.safeParse(req.body);
     if (!input.success) {
-      throw new AppError(400, 'INVALID_REQUEST', 'Envía message como texto de 1 a 5000 caracteres y mode como traditional o generative, sin campos adicionales.');
+      throw new AppError(400, 'INVALID_REQUEST', 'Envía message como texto de 1 a 5000 caracteres y mode como traditional, generative o ml, sin campos adicionales.');
     }
     const { message, mode } = input.data;
-    const analyzer = mode === 'traditional' ? traditionalAnalyzer : generativeAnalyzer;
+    const analyzer = analyzers[mode];
     if (typeof analyzer !== 'function') {
       throw new AppError(503, 'ENGINE_NOT_CONFIGURED', 'El motor solicitado no está configurado.');
     }

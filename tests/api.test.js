@@ -4,21 +4,22 @@ import { once } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import { createApp } from '../src/app.js';
 import { createGenerativeAnalyzer } from '../src/engines/generative.js';
+import { createMlAnalyzer } from '../src/engines/ml.js';
 import { analyzeTraditional } from '../src/engines/traditional.js';
 import { resultSchema } from '../src/contracts.js';
 import { AppError } from '../src/errors.js';
 
 const valid = { category: 'ACCESS', priority: 'MEDIUM', response: 'Verifica tu usuario.', requiresHumanReview: false, mode: 'generative' };
-async function withApp(run, generativeAnalyzer = async () => valid) {
-  const server = createApp({ traditionalAnalyzer: analyzeTraditional, generativeAnalyzer }).listen(0, '127.0.0.1');
+async function withApp(run, generativeAnalyzer = async () => valid, mlAnalyzer = async () => ({ ...valid, mode: 'ml' })) {
+  const server = createApp({ traditionalAnalyzer: analyzeTraditional, generativeAnalyzer, mlAnalyzer }).listen(0, '127.0.0.1');
   await once(server, 'listening');
   const base = `http://127.0.0.1:${server.address().port}`;
   try { await run(base); } finally { await new Promise((resolve) => server.close(resolve)); }
 }
 const post = (base, body) => fetch(`${base}/api/analyze`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
-test('API: ambos modos cumplen exactamente el contrato', () => withApp(async (base) => {
-  for (const mode of ['traditional', 'generative']) {
+test('API: los tres modos cumplen exactamente el contrato', () => withApp(async (base) => {
+  for (const mode of ['traditional', 'generative', 'ml']) {
     const response = await post(base, { message: 'No puedo iniciar sesión', mode });
     assert.equal(response.status, 200);
     const data = await response.json();
@@ -119,3 +120,26 @@ test('pantalla: archivos enlazados se sirven con tipos correctos y cabeceras', (
   assert.ok(!client.includes('innerHTML'));
   assert.ok(!client.includes('GEMINI_API_KEY'));
 }));
+
+test('API: modo ml usa el servicio y conserva la protección común de seguridad', async () => {
+  const mlAnalyzer = createMlAnalyzer({
+    fetchImpl: async () => new Response(JSON.stringify({ ...valid, mode: undefined, confidence: { category: 0.9, priority: 0.9 }, modelVersion: 'v1' })),
+  });
+  await withApp(async (base) => {
+    const response = await post(base, { message: 'Hay una vulnerabilidad.', mode: 'ml' });
+    assert.equal(response.status, 200);
+    const data = await response.json();
+    assert.deepEqual(Object.keys(data).sort(), ['category', 'mode', 'priority', 'requiresHumanReview', 'response']);
+    assert.equal(data.mode, 'ml');
+    assert.equal(data.requiresHumanReview, true);
+  }, undefined, mlAnalyzer);
+});
+
+test('API: servicio ML apagado no afecta a los otros motores', () => withApp(async (base) => {
+  const ml = await post(base, { message: 'No puedo iniciar sesión', mode: 'ml' });
+  assert.equal(ml.status, 503);
+  assert.equal((await ml.json()).error.code, 'ML_UNAVAILABLE');
+  assert.equal(ml.headers.get('cache-control'), 'no-store');
+  assert.equal((await post(base, { message: 'No puedo iniciar sesión', mode: 'traditional' })).status, 200);
+  assert.equal((await post(base, { message: 'No puedo iniciar sesión', mode: 'generative' })).status, 200);
+}, undefined, createMlAnalyzer({ fetchImpl: async () => { throw new TypeError('fetch failed'); } })));

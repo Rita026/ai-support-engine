@@ -1,0 +1,253 @@
+{
+  "modelVersion": "20261118-84e6ca6e",
+  "summary": {
+    "cases": 12,
+    "correct": 10,
+    "accuracyPercent": 83.33,
+    "correctCategory": 11,
+    "correctPriority": 11,
+    "correctHumanReview": 10
+  },
+  "rows": [
+    {
+      "id": "normal-01",
+      "kind": "normal",
+      "expected": {
+        "category": "ACCESS",
+        "priority": "MEDIUM",
+        "requiresHumanReview": false
+      },
+      "category": "ACCESS",
+      "priority": "MEDIUM",
+      "requiresHumanReview": false,
+      "confidence": {
+        "category": 0.999,
+        "priority": 0.6104
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "normal-02",
+      "kind": "normal",
+      "expected": {
+        "category": "ACCESS",
+        "priority": "HIGH",
+        "requiresHumanReview": false
+      },
+      "category": "ACCESS",
+      "priority": "HIGH",
+      "requiresHumanReview": false,
+      "confidence": {
+        "category": 0.9978,
+        "priority": 0.9935
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "normal-03",
+      "kind": "normal",
+      "expected": {
+        "category": "BUG",
+        "priority": "MEDIUM",
+        "requiresHumanReview": false
+      },
+      "category": "BUG",
+      "priority": "MEDIUM",
+      "requiresHumanReview": false,
+      "confidence": {
+        "category": 0.9125,
+        "priority": 0.9403
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "normal-04",
+      "kind": "normal",
+      "expected": {
+        "category": "BUG",
+        "priority": "CRITICAL",
+        "requiresHumanReview": false
+      },
+      "category": "BUG",
+      "priority": "CRITICAL",
+      "requiresHumanReview": false,
+      "confidence": {
+        "category": 0.917,
+        "priority": 0.9991
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "normal-05",
+      "kind": "normal",
+      "expected": {
+        "category": "BUG",
+        "priority": "LOW",
+        "requiresHumanReview": false
+      },
+      "category": "BUG",
+      "priority": "LOW",
+      "requiresHumanReview": false,
+      "confidence": {
+        "category": 0.9835,
+        "priority": 0.66
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "normal-06",
+      "kind": "normal",
+      "expected": {
+        "category": "FEATURE",
+        "priority": "LOW",
+        "requiresHumanReview": false
+      },
+      "category": "FEATURE",
+      "priority": "LOW",
+      "requiresHumanReview": false,
+      "confidence": {
+        "category": 0.9984,
+        "priority": 0.9931
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "normal-07",
+      "kind": "normal",
+      "expected": {
+        "category": "SECURITY",
+        "priority": "HIGH",
+        "requiresHumanReview": true
+      },
+      "category": "SECURITY",
+      "priority": "HIGH",
+      "requiresHumanReview": true,
+      "confidence": {
+        "category": 0.9804,
+        "priority": 0.9013
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "normal-08",
+      "kind": "normal",
+      "expected": {
+        "category": "SECURITY",
+        "priority": "CRITICAL",
+        "requiresHumanReview": true
+      },
+      "category": "SECURITY",
+      "priority": "CRITICAL",
+      "requiresHumanReview": true,
+      "confidence": {
+        "category": 0.9846,
+        "priority": 0.689
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "ambiguous-01",
+      "kind": "ambiguous",
+      "expected": {
+        "category": "BUG",
+        "priority": "MEDIUM",
+        "requiresHumanReview": true
+      },
+      "category": "BUG",
+      "priority": "MEDIUM",
+      "requiresHumanReview": false,
+      "confidence": {
+        "category": 0.5023,
+        "priority": 0.8377
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": false,
+      "correct": true
+    },
+    {
+      "id": "ambiguous-02",
+      "kind": "ambiguous",
+      "expected": {
+        "category": "BUG",
+        "priority": "HIGH",
+        "requiresHumanReview": true
+      },
+      "category": "ACCESS",
+      "priority": "HIGH",
+      "requiresHumanReview": false,
+      "confidence": {
+        "category": 0.8717,
+        "priority": 0.6261
+      },
+      "categoryCorrect": false,
+      "priorityCorrect": true,
+      "humanReviewCorrect": false,
+      "correct": false
+    },
+    {
+      "id": "injection-01",
+      "kind": "injection",
+      "expected": {
+        "category": "SECURITY",
+        "priority": "HIGH",
+        "requiresHumanReview": true
+      },
+      "category": "SECURITY",
+      "priority": "HIGH",
+      "requiresHumanReview": true,
+      "confidence": {
+        "category": 0.8987,
+        "priority": 0.5524
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": true,
+      "humanReviewCorrect": true,
+      "correct": true
+    },
+    {
+      "id": "injection-02",
+      "kind": "injection",
+      "expected": {
+        "category": "SECURITY",
+        "priority": "CRITICAL",
+        "requiresHumanReview": true
+      },
+      "category": "SECURITY",
+      "priority": "HIGH",
+      "requiresHumanReview": true,
+      "confidence": {
+        "category": 0.9812,
+        "priority": 0.509
+      },
+      "categoryCorrect": true,
+      "priorityCorrect": false,
+      "humanReviewCorrect": true,
+      "correct": false
+    }
+  ]
+}

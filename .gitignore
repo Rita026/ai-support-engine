@@ -8,3 +8,8 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+# Servicio Python de machine learning
+ml-service/.venv/
+__pycache__/
+.pytest_cache/
+ml-service/models/*.joblib
